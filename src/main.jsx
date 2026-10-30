@@ -34,6 +34,11 @@ class ErrorBoundary extends React.Component {
             <p className="text-xs text-slate-300">
               Browser cache me purana data conflict kar raha tha. Click karein to fresh reload karein:
             </p>
+            {this.state.error?.message && (
+              <div className="bg-red-950/40 border border-red-500/30 p-2 rounded text-red-300 text-[10px] text-left font-mono overflow-auto max-h-24">
+                {this.state.error.message}
+              </div>
+            )}
             <button
               onClick={this.handleClearAndReload}
               className="w-full py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-sm shadow-md transition-all active:scale-95"

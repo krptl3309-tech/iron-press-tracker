@@ -17,7 +17,7 @@ import RateCardModal from './components/RateCardModal';
 import WhatsAppShareModal from './components/WhatsAppShareModal';
 import BatchDetailsModal from './components/BatchDetailsModal';
 import NotificationToast from './components/NotificationToast';
-import { MessageCircle, CreditCard, Sparkles, AlertCircle, ArrowRight } from 'lucide-react';
+import { MessageCircle, CreditCard, Sparkles, AlertCircle, ArrowRight, Plus } from 'lucide-react';
 
 export default function App() {
   // Safe helper to read LocalStorage
@@ -218,7 +218,7 @@ export default function App() {
                 Laundry Khodiyar Ka Hisaab WhatsApp Bhejna Hai?
               </h3>
               <p className="text-[11px] sm:text-xs text-slate-400 mt-0.5">
-                Number <strong className="text-slate-200">+91 {bhaiya.phone}</strong> save hai. 1-click me summary send karein.
+                Number <strong className="text-slate-200">+91 {bhaiya?.phone || '9725843574'}</strong> save hai. 1-click me summary send karein.
               </p>
             </div>
           </div>
@@ -307,7 +307,7 @@ export default function App() {
 
       {/* Footer */}
       <footer className="border-t border-[#182338] py-4 text-center text-[11px] text-slate-400">
-        <p>IstriKhata • Laundry Khodiyar Expense Tracker • Localhost:5174</p>
+        <p>IstriKhata • Laundry Khodiyar Expense Tracker</p>
       </footer>
 
       {/* Modals */}

@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { X, Plus, Minus, Trash2, Calendar, Shirt } from 'lucide-react';
+import { defaultRateCard } from '../data/defaultData';
 
-export default function AddBatchModal({ isOpen, onClose, rateCard, onAddBatch }) {
+export default function AddBatchModal({ isOpen, onClose, rateCard = [], onAddBatch }) {
+  const safeRates = Array.isArray(rateCard) && rateCard.length > 0 ? rateCard : defaultRateCard;
   const [dateGiven, setDateGiven] = useState(new Date().toISOString().split('T')[0]);
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
@@ -12,19 +14,19 @@ export default function AddBatchModal({ isOpen, onClose, rateCard, onAddBatch })
   // Items in this batch
   const [items, setItems] = useState([
     {
-      rateId: rateCard[0]?.id || '',
-      itemName: rateCard[0]?.itemName || 'Normal Cloth',
-      service: rateCard[0]?.service || 'Ironing',
-      unitPrice: rateCard[0]?.price || 7,
+      rateId: safeRates[0]?.id || 'rate-1',
+      itemName: safeRates[0]?.itemName || 'Normal Cloth (T-Shirt/Shirt/Pant)',
+      service: safeRates[0]?.service || 'Ironing',
+      unitPrice: safeRates[0]?.price || 7,
       qty: 10,
-      subtotal: (rateCard[0]?.price || 7) * 10
+      subtotal: (safeRates[0]?.price || 7) * 10
     }
   ]);
 
   if (!isOpen) return null;
 
   const handleSelectItem = (index, rateId) => {
-    const selectedRate = rateCard.find((r) => r.id === rateId);
+    const selectedRate = safeRates.find((r) => r.id === rateId);
     if (!selectedRate) return;
 
     const updated = [...items];
@@ -56,7 +58,7 @@ export default function AddBatchModal({ isOpen, onClose, rateCard, onAddBatch })
   };
 
   const handleAddItemRow = () => {
-    const nextRate = rateCard[1] || rateCard[0];
+    const nextRate = safeRates[1] || safeRates[0];
     setItems([
       ...items,
       {
@@ -192,7 +194,7 @@ export default function AddBatchModal({ isOpen, onClose, rateCard, onAddBatch })
                         onChange={(e) => handleSelectItem(idx, e.target.value)}
                         className="w-full px-2.5 py-2 bg-[#080e1b] border border-[#273859] rounded-lg text-xs font-semibold text-white focus:outline-none focus:border-amber-400"
                       >
-                        {rateCard.map((r) => (
+                        {safeRates.map((r) => (
                           <option key={r.id} value={r.id}>
                             {r.itemName} ({r.service}) - ₹{r.price}
                           </option>

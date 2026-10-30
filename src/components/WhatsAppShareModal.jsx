@@ -5,28 +5,32 @@ export default function WhatsAppShareModal({
   isOpen,
   onClose,
   bhaiya,
-  totalExpense,
-  totalPaid,
-  pendingDue,
-  clothesInPress,
-  totalClothesCount
+  totalExpense = 0,
+  totalPaid = 0,
+  pendingDue = 0,
+  clothesInPress = 0,
+  totalClothesCount = 0
 }) {
   const [copied, setCopied] = useState(false);
-  const [phoneNumber, setPhoneNumber] = useState(bhaiya.phone || '9725843574');
+  const [phoneNumber, setPhoneNumber] = useState(bhaiya?.phone || '9725843574');
 
   if (!isOpen) return null;
 
+  const safeTotalExpense = Number(totalExpense) || 0;
+  const safeTotalPaid = Number(totalPaid) || 0;
+  const safePendingDue = Math.max(0, Number(pendingDue) || 0);
+
   const messageText = `*Istri / Press Ka Hisaab* 🧺✨
-Namaste ${bhaiya.name || 'Bhaiya'}! 🙏
+Namaste ${bhaiya?.name || 'Laundry Khodiyar'}! 🙏
 
 Aapke kapdo aur payment ka hisaab:
-• Kul Kapde (Total): ${totalClothesCount} pcs
-• Kul Kharcha (Total Bill): ₹${totalExpense.toLocaleString('en-IN')}
-• Paid Kiya (Cash/UPI): ₹${totalPaid.toLocaleString('en-IN')}
+• Kul Kapde (Total): ${totalClothesCount || 0} pcs
+• Kul Kharcha (Total Bill): ₹${safeTotalExpense.toLocaleString('en-IN')}
+• Paid Kiya (Cash/UPI): ₹${safeTotalPaid.toLocaleString('en-IN')}
 -----------------------------
-*Baki Rashi (Pending Due): ₹${Math.max(0, pendingDue).toLocaleString('en-IN')}*
+*Baki Rashi (Pending Due): ₹${safePendingDue.toLocaleString('en-IN')}*
 -----------------------------
-Kapde abhi press me: ${clothesInPress} pcs
+Kapde abhi press me: ${clothesInPress || 0} pcs
 
 Dhanyawad!`;
 
@@ -37,7 +41,7 @@ Dhanyawad!`;
   };
 
   const handleSendWhatsApp = () => {
-    const cleanPhone = phoneNumber.replace(/[^0-9]/g, '');
+    const cleanPhone = (phoneNumber || '9725843574').replace(/[^0-9]/g, '');
     const encoded = encodeURIComponent(messageText);
     const url = `https://wa.me/91${cleanPhone}?text=${encoded}`;
     window.open(url, '_blank');
