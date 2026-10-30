@@ -41,11 +41,11 @@ export default function Header({
               {/* Laundry Khodiyar Name & Number */}
               <div className="flex items-center gap-2 text-xs text-slate-300">
                 <span className="font-bold text-amber-300 text-xs sm:text-sm truncate max-w-[140px] sm:max-w-none">
-                  {bhaiya.name}
+                  {bhaiya?.name || 'Laundry Khodiyar'}
                 </span>
                 <span className="text-slate-600 hidden xs:inline">•</span>
                 <span className="text-[11px] font-mono text-slate-400 hidden xs:inline">
-                  +91 {bhaiya.phone}
+                  +91 {bhaiya?.phone || '9725843574'}
                 </span>
               </div>
             </div>
@@ -55,7 +55,7 @@ export default function Header({
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             {/* Phone Call */}
             <a
-              href={`tel:${bhaiya.phone}`}
+              href={`tel:${bhaiya?.phone || '9725843574'}`}
               className="p-2 sm:px-3 sm:py-1.5 rounded-xl bg-[#142138] border border-[#24375b] text-cyan-400 hover:text-cyan-300 hover:bg-[#1a2d4d] transition-all flex items-center gap-1 text-xs font-semibold"
               title="Call Bhaiya"
             >
@@ -65,7 +65,7 @@ export default function Header({
 
             {/* Direct WhatsApp Chat */}
             <a
-              href={`https://wa.me/91${bhaiya.phone}`}
+              href={`https://wa.me/91${bhaiya?.phone || '9725843574'}`}
               target="_blank"
               rel="noreferrer"
               className="p-2 sm:px-3 sm:py-1.5 rounded-xl bg-[#0e2a1d] border border-emerald-500/40 text-emerald-300 hover:bg-[#143d2a] transition-all flex items-center gap-1 text-xs font-bold"

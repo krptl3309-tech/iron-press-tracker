@@ -4,7 +4,8 @@ import { Shirt, Plus, Calendar, Clock, ChevronRight, Eye } from 'lucide-react';
 export default function BatchTable({ batches, onOpenAddBatch, onSelectBatch }) {
   const [filter, setFilter] = useState('All'); // 'All', 'With Bhaiya', 'Delivered'
 
-  const filtered = batches.filter((b) => {
+  const safeBatches = Array.isArray(batches) ? batches : [];
+  const filtered = safeBatches.filter((b) => {
     if (filter === 'All') return true;
     return b.status === filter;
   });

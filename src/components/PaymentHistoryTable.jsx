@@ -4,7 +4,8 @@ import { CreditCard, QrCode, Banknote, Edit2, Plus, Calendar } from 'lucide-reac
 export default function PaymentHistoryTable({ payments, onOpenAddPayment, onEditPayment }) {
   const [modeFilter, setModeFilter] = useState('All'); // 'All', 'UPI', 'Cash'
 
-  const filtered = payments.filter((p) => {
+  const safePayments = Array.isArray(payments) ? payments : [];
+  const filtered = safePayments.filter((p) => {
     if (modeFilter === 'All') return true;
     return p.mode === modeFilter;
   });

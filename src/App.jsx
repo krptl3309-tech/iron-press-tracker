@@ -20,54 +20,70 @@ import NotificationToast from './components/NotificationToast';
 import { MessageCircle, CreditCard, Sparkles, AlertCircle, ArrowRight } from 'lucide-react';
 
 export default function App() {
-  // LocalStorage-backed state with scratch reset check
-  const [bhaiya, setBhaiya] = useState(() => {
-    const isCleaned = localStorage.getItem('istri_scratch_clean_v3');
-    if (!isCleaned) {
-      localStorage.setItem('istri_scratch_clean_v3', 'true');
-      localStorage.setItem('istri_batches', JSON.stringify([]));
-      localStorage.setItem('istri_payments', JSON.stringify([]));
-      localStorage.setItem('istri_bhaiya', JSON.stringify(defaultBhaiyaDetails));
-      return defaultBhaiyaDetails;
+  // Safe helper to read LocalStorage
+  const getStored = (key, fallback) => {
+    try {
+      const item = localStorage.getItem(key);
+      if (!item || item === 'undefined' || item === 'null') return fallback;
+      const parsed = JSON.parse(item);
+      return parsed !== null && parsed !== undefined ? parsed : fallback;
+    } catch {
+      return fallback;
     }
-    const saved = localStorage.getItem('istri_bhaiya');
-    return saved ? JSON.parse(saved) : defaultBhaiyaDetails;
+  };
+
+  // LocalStorage-backed state with bulletproof fallbacks
+  const [bhaiya, setBhaiya] = useState(() => {
+    const val = getStored('istri_bhaiya', defaultBhaiyaDetails);
+    return val && typeof val === 'object' ? val : defaultBhaiyaDetails;
   });
 
   const [rateCard, setRateCard] = useState(() => {
-    const saved = localStorage.getItem('istri_rates');
-    return saved ? JSON.parse(saved) : defaultRateCard;
+    const val = getStored('istri_rates', defaultRateCard);
+    return Array.isArray(val) && val.length > 0 ? val : defaultRateCard;
   });
 
   const [batches, setBatches] = useState(() => {
-    const isCleaned = localStorage.getItem('istri_scratch_clean_v3');
-    if (!isCleaned) return [];
-    const saved = localStorage.getItem('istri_batches');
-    return saved ? JSON.parse(saved) : [];
+    const val = getStored('istri_batches', []);
+    return Array.isArray(val) ? val : [];
   });
 
   const [payments, setPayments] = useState(() => {
-    const isCleaned = localStorage.getItem('istri_scratch_clean_v3');
-    if (!isCleaned) return [];
-    const saved = localStorage.getItem('istri_payments');
-    return saved ? JSON.parse(saved) : [];
+    const val = getStored('istri_payments', []);
+    return Array.isArray(val) ? val : [];
   });
 
   // Save to LocalStorage on updates
   useEffect(() => {
-    localStorage.setItem('istri_bhaiya', JSON.stringify(bhaiya));
+    try {
+      localStorage.setItem('istri_bhaiya', JSON.stringify(bhaiya || defaultBhaiyaDetails));
+    } catch (e) {
+      console.error(e);
+    }
   }, [bhaiya]);
 
   useEffect(() => {
-    localStorage.setItem('istri_rates', JSON.stringify(rateCard));
+    try {
+      localStorage.setItem('istri_rates', JSON.stringify(rateCard || defaultRateCard));
+    } catch (e) {
+      console.error(e);
+    }
   }, [rateCard]);
 
   useEffect(() => {
-    localStorage.setItem('istri_batches', JSON.stringify(batches));
+    try {
+      localStorage.setItem('istri_batches', JSON.stringify(batches || []));
+    } catch (e) {
+      console.error(e);
+    }
   }, [batches]);
 
   useEffect(() => {
-    localStorage.setItem('istri_payments', JSON.stringify(payments));
+    try {
+      localStorage.setItem('istri_payments', JSON.stringify(payments || []));
+    } catch (e) {
+      console.error(e);
+    }
   }, [payments]);
 
   // Modal states
@@ -86,26 +102,29 @@ export default function App() {
     }, 3500);
   };
 
-  // Computations
+  // Safe Computations (Will NEVER throw on null/undefined)
+  const safeBatches = Array.isArray(batches) ? batches : [];
+  const safePayments = Array.isArray(payments) ? payments : [];
+
   const totalExpense = useMemo(() => {
-    return batches.reduce((sum, b) => sum + (Number(b.totalAmount) || 0), 0);
-  }, [batches]);
+    return safeBatches.reduce((sum, b) => sum + (Number(b?.totalAmount) || 0), 0);
+  }, [safeBatches]);
 
   const totalPaid = useMemo(() => {
-    return payments.reduce((sum, p) => sum + (Number(p.amount) || 0), 0);
-  }, [payments]);
+    return safePayments.reduce((sum, p) => sum + (Number(p?.amount) || 0), 0);
+  }, [safePayments]);
 
   const pendingDue = totalExpense - totalPaid;
 
   const totalClothesCount = useMemo(() => {
-    return batches.reduce((sum, b) => sum + (Number(b.totalPieces) || 0), 0);
-  }, [batches]);
+    return safeBatches.reduce((sum, b) => sum + (Number(b?.totalPieces) || 0), 0);
+  }, [safeBatches]);
 
   const clothesInPress = useMemo(() => {
-    return batches
-      .filter((b) => b.status !== 'Delivered')
-      .reduce((sum, b) => sum + (Number(b.totalPieces) || 0), 0);
-  }, [batches]);
+    return safeBatches
+      .filter((b) => b?.status !== 'Delivered')
+      .reduce((sum, b) => sum + (Number(b?.totalPieces) || 0), 0);
+  }, [safeBatches]);
 
   // Handlers
   const handleAddBatch = (newBatch) => {

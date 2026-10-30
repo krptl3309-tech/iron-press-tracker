@@ -2,8 +2,8 @@ import React from 'react';
 import { Sliders, ArrowRight, Sparkles, Tag } from 'lucide-react';
 
 export default function RateSummaryCard({ rateCard, onOpenRateCard }) {
-  // Show first 6 key rates
-  const previewRates = rateCard.slice(0, 6);
+  // Show first 6 key rates safely
+  const previewRates = Array.isArray(rateCard) ? rateCard.slice(0, 6) : [];
 
   return (
     <div className="bg-[#121c2f] border border-[#21304c] rounded-2xl p-5 shadow-lg flex flex-col justify-between">
